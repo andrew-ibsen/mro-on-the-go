@@ -1,0 +1,18 @@
+{
+  "name": "ops-maintenance-v1",
+  "private": true,
+  "version": "1.0.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev -w @ops/api\" \"npm run dev -w @ops/web\"",
+    "build": "npm run build -w @ops/api && npm run build -w @ops/web",
+    "test": "npm run test -w @ops/api",
+    "seed": "npm run seed -w @ops/api"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
