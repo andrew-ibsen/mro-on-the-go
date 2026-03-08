@@ -17,6 +17,12 @@ button{cursor:pointer}
 .timeline{position:relative;height:100px;background:linear-gradient(90deg,#0f1627,#121c33);border:1px solid #2d426d;border-radius:10px;overflow:hidden}
 .bar{position:absolute;top:20px;height:28px;background:linear-gradient(90deg,#2f5ec4,#3cb5ff);color:white;border-radius:7px;padding:4px 8px;font-size:12px;white-space:nowrap}
 pre{white-space:pre-wrap;background:#0a1326;border:1px solid #273b63;padding:8px;border-radius:8px}
+.steps,.tabbar,.actions{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.steps button,.tabbar button{padding:7px 10px}
+.steps button.active,.tabbar button.active{background:#2d5fca;border-color:#5f8deb}
+.tableWrap{overflow:auto;border:1px solid #2a3b5f;border-radius:10px}
+table{width:100%;border-collapse:collapse;min-width:680px}
+th,td{padding:8px;border-bottom:1px solid #223556;text-align:left;font-size:.9rem}
 
 @media (max-width: 1024px){
   .app{grid-template-columns:1fr;padding:12px;gap:12px}

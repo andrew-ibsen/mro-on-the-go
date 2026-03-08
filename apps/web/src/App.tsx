@@ -9,6 +9,9 @@ export function App() {
   const [faultText, setFaultText] = useState('Hydraulic pressure fluctuates during climb');
   const [faultResult, setFaultResult] = useState<any>(null);
   const [storesAirline, setStoresAirline] = useState('BA');
+  const [reportStep, setReportStep] = useState<1 | 2 | 3>(1);
+  const [activeChargeTab, setActiveChargeTab] = useState('manhour');
+  const [selectedChargeIds, setSelectedChargeIds] = useState<string[]>([]);
 
   const load = async () => {
     const res = await fetch(`${API}/dashboard`, { headers: { 'x-role': role } });
@@ -27,6 +30,61 @@ export function App() {
   const storesTx = useMemo(
     () => (data?.storesTransactions || []).filter((t: any) => t.airline === storesAirline).slice(0, 8),
     [data, storesAirline]
+  );
+
+  const chargeLines = useMemo(() => {
+    const woLines = (data?.workOrders || []).map((w: any) => ({
+      id: `mh-${w.id}`,
+      category: 'manhour',
+      date: new Date().toISOString().slice(0, 10),
+      reg: w.aircraftReg,
+      ref: w.id,
+      description: `Labor for ${w.discrepancy}`,
+      qty: Number(w.laborHours || 0),
+      rate: Number(w.laborRate || 0)
+    }));
+
+    const partLines = (data?.storesTransactions || []).filter((t: any) => t.type === 'OUT').map((t: any) => ({
+      id: `pc-${t.id}`,
+      category: 'parts',
+      date: String(t.createdAt || '').slice(0, 10),
+      reg: '-',
+      ref: t.partNumber,
+      description: `Part issue ${t.partNumber}`,
+      qty: Number(t.quantity || 0),
+      rate: 85
+    }));
+
+    const fixedLines = (data?.workOrders || []).map((w: any) => ({
+      id: `ff-${w.id}`,
+      category: 'fixed',
+      date: new Date().toISOString().slice(0, 10),
+      reg: w.aircraftReg,
+      ref: w.id,
+      description: 'Transit fixed fee',
+      qty: 1,
+      rate: 250
+    }));
+
+    return [...fixedLines, ...woLines, ...partLines].map((x) => ({ ...x, total: x.qty * x.rate }));
+  }, [data]);
+
+  const chargeTabs = [
+    { key: 'fixed', label: 'Fixed Fees' },
+    { key: 'manhour', label: 'Man Hour' },
+    { key: 'parts', label: 'Parts & Cons' },
+    { key: 'delay', label: 'Delays' },
+    { key: 'logistics', label: 'Logistics' }
+  ];
+
+  const visibleChargeLines = useMemo(
+    () => chargeLines.filter((c: any) => c.category === activeChargeTab),
+    [chargeLines, activeChargeTab]
+  );
+
+  const selectedTotal = useMemo(
+    () => chargeLines.filter((c: any) => selectedChargeIds.includes(c.id)).reduce((s: number, c: any) => s + c.total, 0),
+    [chargeLines, selectedChargeIds]
   );
 
   const runFault = async (woId: string) => {
@@ -50,6 +108,10 @@ export function App() {
       })
     });
     load();
+  };
+
+  const toggleCharge = (id: string) => {
+    setSelectedChargeIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
   };
 
   return (
@@ -100,6 +162,46 @@ export function App() {
               </div>
             ))}
           </div>
+        </section>
+
+        <section className="card">
+          <h2>Invoice Report Builder</h2>
+          <div className="steps">
+            <button className={reportStep >= 1 ? 'active' : ''} onClick={() => setReportStep(1)}>1. Scope</button>
+            <button className={reportStep >= 2 ? 'active' : ''} onClick={() => setReportStep(2)}>2. Consolidate</button>
+            <button className={reportStep >= 3 ? 'active' : ''} onClick={() => setReportStep(3)}>3. Finalize</button>
+          </div>
+
+          {reportStep === 1 && (
+            <div className="row"><span>Selected airline scope</span><b>{storesAirline}</b></div>
+          )}
+
+          {reportStep >= 2 && (
+            <>
+              <div className="tabbar">
+                {chargeTabs.map((t) => (
+                  <button key={t.key} className={activeChargeTab === t.key ? 'active' : ''} onClick={() => setActiveChargeTab(t.key)}>{t.label}</button>
+                ))}
+              </div>
+              <div className="tableWrap">
+                <table>
+                  <thead><tr><th></th><th>Date</th><th>Ref</th><th>Description</th><th>Qty</th><th>Rate</th><th>Total</th></tr></thead>
+                  <tbody>
+                    {visibleChargeLines.map((c: any) => (
+                      <tr key={c.id}>
+                        <td><input type="checkbox" checked={selectedChargeIds.includes(c.id)} onChange={() => toggleCharge(c.id)} /></td>
+                        <td>{c.date}</td><td>{c.ref}</td><td>{c.description}</td><td>{c.qty}</td><td>${c.rate}</td><td>${c.total.toFixed(2)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div className="row"><span>Selected subtotal</span><b>${selectedTotal.toFixed(2)}</b></div>
+            </>
+          )}
+
+          {reportStep === 3 && <div className="row"><span>Invoice pack status</span><b>Ready to export</b></div>}
+          <div className="actions"><button onClick={() => setReportStep((s) => (s < 3 ? ((s + 1) as any) : s))}>Next</button></div>
         </section>
 
         <section className="card">
