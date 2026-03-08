@@ -1,16 +1,37 @@
 :root{color-scheme:dark;background:#0b1020;color:#e8edf6;font-family:Inter,Segoe UI,sans-serif}
+*{box-sizing:border-box}
 body{margin:0;background:radial-gradient(circle at top,#1a2140,#090d18)}
-.app{display:grid;grid-template-columns:260px 1fr;min-height:100vh;gap:18px;padding:18px}
-.sidebar{background:#11182b;border:1px solid #24314f;border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.app{display:grid;grid-template-columns:260px 1fr;min-height:100vh;gap:18px;padding:18px;max-width:1600px;margin:0 auto}
+.sidebar{background:#11182b;border:1px solid #24314f;border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px;height:fit-content;position:sticky;top:16px}
 .sidebar h1{margin:0;font-size:1.4rem}.sidebar p{opacity:.8;margin:0 0 8px}
-select,button,input{background:#1a2540;color:#e8edf6;border:1px solid #354a77;border-radius:8px;padding:8px}
+h2{margin:0 0 12px 0;font-size:1.15rem}
+select,button,input{background:#1a2540;color:#e8edf6;border:1px solid #354a77;border-radius:10px;padding:10px}
 button{cursor:pointer}
 .content{display:grid;gap:14px;align-content:start}
 .card{background:rgba(17,24,43,.92);border:1px solid #2c3f68;border-radius:14px;padding:14px;box-shadow:0 8px 24px rgba(0,0,0,.28)}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #24314f}
+.row{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid #24314f}
+.row span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pill{background:#21335a;padding:3px 8px;border-radius:999px;border:1px solid #4f6ca3}
 .wo{padding:10px;border:1px solid #2a3b5f;border-radius:10px;margin-bottom:8px;background:#10172b}
 .timeline{position:relative;height:100px;background:linear-gradient(90deg,#0f1627,#121c33);border:1px solid #2d426d;border-radius:10px;overflow:hidden}
 .bar{position:absolute;top:20px;height:28px;background:linear-gradient(90deg,#2f5ec4,#3cb5ff);color:white;border-radius:7px;padding:4px 8px;font-size:12px;white-space:nowrap}
 pre{white-space:pre-wrap;background:#0a1326;border:1px solid #273b63;padding:8px;border-radius:8px}
+
+@media (max-width: 1024px){
+  .app{grid-template-columns:1fr;padding:12px;gap:12px}
+  .sidebar{position:static}
+  .grid-2{grid-template-columns:1fr}
+}
+
+@media (max-width: 640px){
+  .app{padding:10px;gap:10px}
+  .sidebar{padding:12px}
+  .card{padding:12px;border-radius:12px}
+  h2{font-size:1rem}
+  .row{font-size:.9rem}
+  .row span{white-space:normal}
+  select,button,input{width:100%}
+  .timeline{height:120px}
+  .bar{font-size:11px;max-width:90%;overflow:hidden;text-overflow:ellipsis}
+}

@@ -67,12 +67,12 @@ export function App() {
       <main className="content">
         <section className="card grid-2">
           <div>
-            <h2>Stores Keeper</h2>
+            <h2>Stores Keeper — Inventory Management</h2>
             {(data?.inventory || []).map((i: any) => <div key={i.id} className="row"><span>{i.partNo} - {i.description}</span><b>{i.qtyOnHand}</b></div>)}
             <small>Low stock: {lowStock.length}</small>
           </div>
           <div>
-            <h2>Tool Control</h2>
+            <h2>Stores Keeper — Tool Control</h2>
             {(data?.tools || []).map((t: any) => <div key={t.id} className="row"><span>{t.tag} {t.name}</span><b>{t.status}</b></div>)}
           </div>
         </section>
