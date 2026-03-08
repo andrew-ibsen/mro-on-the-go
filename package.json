@@ -1,5 +1,5 @@
 {
-  "name": "ops-maintenance-v1",
+  "name": "mro-on-the-go",
   "private": true,
   "version": "1.0.0",
   "workspaces": [
@@ -16,3 +16,4 @@
     "concurrently": "^8.2.2"
   }
 }
+

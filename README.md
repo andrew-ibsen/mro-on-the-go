@@ -1,4 +1,4 @@
-# AeroOps V1 (Dark Mode)
+# MRO on the GO (Dark Mode)
 
 A production-style monorepo demo for aircraft maintenance operations.
 
@@ -19,7 +19,7 @@ A production-style monorepo demo for aircraft maintenance operations.
 
 ## Quick Start
 ```bash
-cd ops-maintenance-v1
+cd mro-on-the-go
 npm install
 npm run seed
 npm run dev
@@ -57,11 +57,12 @@ Use header `x-role` from UI role selector:
 ## Push to GitHub
 If not already authenticated:
 ```bash
-git remote add origin https://github.com/andrew-ibsen/ops-maintenance-v1.git
+git remote add origin https://github.com/andrew-ibsen/mro-on-the-go.git
 git push -u origin main
 ```
 Or use GitHub CLI:
 ```bash
 gh auth login
-gh repo create andrew-ibsen/ops-maintenance-v1 --private --source . --push
+gh repo create andrew-ibsen/mro-on-the-go --public --source . --push
 ```
+

@@ -46,7 +46,7 @@ export function App() {
   return (
     <div className="app">
       <aside className="sidebar">
-        <h1>AeroOps V1</h1>
+        <h1>MRO on the GO</h1>
         <p>Aircraft Maintenance Command</p>
         <label>Role</label>
         <select value={role} onChange={(e) => setRole(e.target.value)}>
@@ -110,3 +110,4 @@ export function App() {
     </div>
   );
 }
+
