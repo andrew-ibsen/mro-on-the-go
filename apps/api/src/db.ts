@@ -11,7 +11,10 @@ const emptyDb: DevDb = {
   allocations: [],
   experienceLogs: [],
   technicalRecords: [],
-  invoices: []
+  invoices: [],
+  storesItems: [],
+  storesTransactions: [],
+  jfkUsers: []
 };
 
 export function readDb(): DevDb {

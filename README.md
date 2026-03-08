@@ -4,6 +4,7 @@ A production-style monorepo demo for aircraft maintenance operations.
 
 ## Modules
 - **Stores Keeper**: stock, issue/return constraints, low-stock visibility
+  - Includes first-pass clone from your Power Apps export (`Stores Keeper`) with airline-segmented inventory + Transaction Log model
 - **Tool Control**: issue/return tools with accountability
 - **Work Orders → Invoice/Billing**: create, progress, close, generate invoice lines
 - **Experience Logs**: technician competency and practical exposure tracking
@@ -33,6 +34,13 @@ npm run dev
 - `npm run build` - build all packages
 - `npm test` - run backend critical logic tests
 - `npm run seed` - reset and seed local demo data
+
+## Stores Keeper API (new)
+- `GET /stores/items?airline=BA`
+- `POST /stores/items`
+- `GET /stores/transactions?airline=BA`
+- `POST /stores/transactions` (`IN | OUT | TRANSFER | ADJUSTMENT`)
+- `GET /jfk-users`
 
 ## Demo Users (local/dev auth skeleton)
 Use header `x-role` from UI role selector:

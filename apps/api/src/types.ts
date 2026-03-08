@@ -25,6 +25,43 @@ export interface Invoice {
   createdAt: string;
 }
 
+export interface StoresItem {
+  id: string;
+  airline: string;
+  partNumber: string;
+  description: string;
+  jfkLocation: string;
+  batchNumber?: string;
+  serialNumber?: string;
+  quantity: number;
+  timeExpiration?: string;
+  comments?: string;
+  createdBy?: string;
+  attachments?: Array<{ id: string; filename: string; path: string; uploadedAt: string }>;
+}
+
+export interface StoresTransaction {
+  id: string;
+  airline: string;
+  type: 'IN' | 'OUT' | 'TRANSFER' | 'ADJUSTMENT';
+  partNumber: string;
+  quantity: number;
+  fromLocation?: string;
+  toLocation?: string;
+  note?: string;
+  createdAt: string;
+  createdBy?: string;
+}
+
+export interface JfkUser {
+  id: string;
+  firstName: string;
+  lastName: string;
+  staffNumber?: string;
+  email?: string;
+  dateOfBirth?: string;
+}
+
 export interface DevDb {
   inventory: InventoryItem[];
   tools: ToolItem[];
@@ -33,4 +70,7 @@ export interface DevDb {
   experienceLogs: ExperienceLog[];
   technicalRecords: TechnicalRecord[];
   invoices: Invoice[];
+  storesItems: StoresItem[];
+  storesTransactions: StoresTransaction[];
+  jfkUsers: JfkUser[];
 }

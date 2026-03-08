@@ -8,6 +8,7 @@ export function App() {
   const [data, setData] = useState<Dashboard | null>(null);
   const [faultText, setFaultText] = useState('Hydraulic pressure fluctuates during climb');
   const [faultResult, setFaultResult] = useState<any>(null);
+  const [storesAirline, setStoresAirline] = useState('BA');
 
   const load = async () => {
     const res = await fetch(`${API}/dashboard`, { headers: { 'x-role': role } });
@@ -19,6 +20,14 @@ export function App() {
   }, [role]);
 
   const lowStock = useMemo(() => (data?.inventory || []).filter((i: any) => i.qtyOnHand <= i.minQty), [data]);
+  const storesItems = useMemo(
+    () => (data?.storesItems || []).filter((i: any) => i.airline === storesAirline),
+    [data, storesAirline]
+  );
+  const storesTx = useMemo(
+    () => (data?.storesTransactions || []).filter((t: any) => t.airline === storesAirline).slice(0, 8),
+    [data, storesAirline]
+  );
 
   const runFault = async (woId: string) => {
     const fd = new FormData();
@@ -65,6 +74,31 @@ export function App() {
           <div>
             <h2>Tool Control</h2>
             {(data?.tools || []).map((t: any) => <div key={t.id} className="row"><span>{t.tag} {t.name}</span><b>{t.status}</b></div>)}
+          </div>
+        </section>
+
+        <section className="card grid-2">
+          <div>
+            <h2>Stores Keeper (Power Apps clone)</h2>
+            <label>Airline</label>{' '}
+            <select value={storesAirline} onChange={(e) => setStoresAirline(e.target.value)}>
+              <option>BA</option><option>EI</option><option>IB</option><option>QF</option><option>ANA</option><option>ANZ</option><option>NO</option>
+            </select>
+            {storesItems.map((s: any) => (
+              <div key={s.id} className="row">
+                <span>{s.partNumber} · {s.description} · {s.jfkLocation}</span>
+                <b>{s.quantity}</b>
+              </div>
+            ))}
+          </div>
+          <div>
+            <h2>Transaction Log JFK</h2>
+            {storesTx.map((t: any) => (
+              <div key={t.id} className="row">
+                <span>{t.type} {t.partNumber}</span>
+                <b>{t.quantity}</b>
+              </div>
+            ))}
           </div>
         </section>
 

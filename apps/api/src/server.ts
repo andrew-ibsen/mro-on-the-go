@@ -30,6 +30,102 @@ app.use((req, _res, next) => {
 app.get('/health', (_req, res) => res.json({ ok: true }));
 app.get('/dashboard', (_req, res) => res.json(readDb()));
 
+app.get('/stores/items', (req, res) => {
+  const db = readDb();
+  const airline = String(req.query.airline || '').trim();
+  const items = airline ? db.storesItems.filter((i) => i.airline.toLowerCase() === airline.toLowerCase()) : db.storesItems;
+  res.json(items);
+});
+
+app.post('/stores/items', (req, res) => {
+  const db = readDb();
+  const item = {
+    id: nanoid(),
+    airline: String(req.body.airline || 'BA').toUpperCase(),
+    partNumber: req.body.partNumber,
+    description: req.body.description,
+    jfkLocation: req.body.jfkLocation,
+    batchNumber: req.body.batchNumber || 'N/A',
+    serialNumber: req.body.serialNumber || 'N/A',
+    quantity: Number(req.body.quantity ?? 0),
+    timeExpiration: req.body.timeExpiration,
+    comments: req.body.comments,
+    createdBy: req.body.createdBy || (req as any).role,
+    attachments: []
+  };
+
+  if (!item.partNumber || !item.description || !item.jfkLocation) {
+    return res.status(400).json({ error: 'partNumber, description, and jfkLocation are required' });
+  }
+
+  db.storesItems.push(item as any);
+  writeDb(db);
+  return res.status(201).json(item);
+});
+
+app.post('/stores/transactions', (req, res) => {
+  const db = readDb();
+  const type = String(req.body.type || '').toUpperCase();
+  if (!['IN', 'OUT', 'TRANSFER', 'ADJUSTMENT'].includes(type)) {
+    return res.status(400).json({ error: 'Invalid type. Use IN, OUT, TRANSFER, or ADJUSTMENT' });
+  }
+
+  const qty = Number(req.body.quantity);
+  if (!Number.isFinite(qty) || qty <= 0) {
+    return res.status(400).json({ error: 'quantity must be > 0' });
+  }
+
+  const airline = String(req.body.airline || 'BA').toUpperCase();
+  const partNumber = String(req.body.partNumber || '').trim();
+  const item = db.storesItems.find((i) => i.airline === airline && i.partNumber === partNumber);
+  if (!item) return res.status(404).json({ error: 'Stores item not found for airline + partNumber' });
+
+  if (type === 'OUT' && item.quantity < qty) {
+    return res.status(400).json({ error: 'Insufficient quantity for OUT transaction' });
+  }
+
+  if (type === 'IN') item.quantity += qty;
+  if (type === 'OUT') item.quantity -= qty;
+  if (type === 'ADJUSTMENT') item.quantity = qty;
+
+  if (type === 'TRANSFER') {
+    const from = String(req.body.fromLocation || item.jfkLocation);
+    const to = String(req.body.toLocation || '').trim();
+    if (!to) return res.status(400).json({ error: 'toLocation required for TRANSFER' });
+    item.jfkLocation = to;
+    req.body.fromLocation = from;
+  }
+
+  const tx = {
+    id: nanoid(),
+    airline,
+    type,
+    partNumber,
+    quantity: qty,
+    fromLocation: req.body.fromLocation,
+    toLocation: req.body.toLocation,
+    note: req.body.note,
+    createdAt: new Date().toISOString(),
+    createdBy: req.body.createdBy || (req as any).role
+  };
+
+  db.storesTransactions.unshift(tx as any);
+  writeDb(db);
+  return res.status(201).json({ transaction: tx, item });
+});
+
+app.get('/stores/transactions', (req, res) => {
+  const db = readDb();
+  const airline = String(req.query.airline || '').trim();
+  const rows = airline ? db.storesTransactions.filter((t) => t.airline.toLowerCase() === airline.toLowerCase()) : db.storesTransactions;
+  res.json(rows.slice(0, 300));
+});
+
+app.get('/jfk-users', (_req, res) => {
+  const db = readDb();
+  res.json(db.jfkUsers);
+});
+
 app.post('/inventory/:id/issue', (req, res) => {
   const db = readDb();
   const item = db.inventory.find((i) => i.id === req.params.id);

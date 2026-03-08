@@ -52,7 +52,49 @@ writeDb({
     { id: 'exp2', technician: 'Maya', skill: 'Cabin interior repair', aircraftType: 'B777', hours: 1.8, date: '2026-03-06' }
   ],
   technicalRecords: [],
-  invoices: []
+  invoices: [],
+  storesItems: [
+    {
+      id: 'stk-ba-1',
+      airline: 'BA',
+      partNumber: 'BA-320-DOOR-LATCH',
+      description: 'Door Latch Assembly',
+      jfkLocation: 'JFK-A1-SHELF-3',
+      batchNumber: 'BA-B321',
+      serialNumber: 'SN-99301',
+      quantity: 6,
+      timeExpiration: '2027-12-31',
+      comments: 'Priority part',
+      createdBy: 'andrew.ibsen@ba.com'
+    },
+    {
+      id: 'stk-ei-1',
+      airline: 'EI',
+      partNumber: 'EI-737-FLTR-90',
+      description: 'Fuel Filter',
+      jfkLocation: 'JFK-B4-BIN-7',
+      quantity: 14,
+      timeExpiration: '2028-01-20',
+      createdBy: 'stores.agent@ba.com'
+    }
+  ],
+  storesTransactions: [
+    {
+      id: 'tx-1',
+      airline: 'BA',
+      type: 'IN',
+      partNumber: 'BA-320-DOOR-LATCH',
+      quantity: 6,
+      toLocation: 'JFK-A1-SHELF-3',
+      note: 'Initial stock',
+      createdAt: new Date().toISOString(),
+      createdBy: 'andrew.ibsen@ba.com'
+    }
+  ],
+  jfkUsers: [
+    { id: 'u1', firstName: 'Andrew', lastName: 'Ibsen', email: 'andrew.ibsen@ba.com', staffNumber: 'BA001' },
+    { id: 'u2', firstName: 'Katia', lastName: 'Ibsen', email: 'katia.ibsen@ba.com', staffNumber: 'BA002' }
+  ]
 });
 
 console.log('Seed complete.');
